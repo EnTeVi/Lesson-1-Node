@@ -1,4 +1,5 @@
 const express = require('express');
+
 const {fileServices} = require("./services");
 
 
@@ -17,20 +18,20 @@ app.get('/users', async (req, res) => {
 
 // Додавання юзерів у БД
 app.post('/users', async (req, res) => {
-    const userInfo = req.body;
+    const {name, age} = req.body;
 
-    if (userInfo.name.length < 3 || typeof userInfo.name  !== 'string') {
+    if (!name || name.length < 2) {
         return res.status(400).json(`User not found`);
     }
-    if (userInfo.age < 0 || Number.isNaN(+userInfo.age)) {
+    if (!age || age < 18 || Number.isNaN(age)) {
         return res.status(400).json(`Wrong age`);
     }
 
     const users = await fileServices.reader();
     const user = {
         id: users[users.length -1].id + 1,
-        name: userInfo.name,
-        age: userInfo.age
+        name,
+        age
     };
 
     users.push(user);
@@ -44,7 +45,7 @@ app.post('/users', async (req, res) => {
 app.get('/users/:userId', async (req, res) => {
     const {userId} = req.params;
     const users = await fileServices.reader();
-    const user = users.find((u) => u.id === +userId);
+    const user = users.find((user) => user.id === +userId);
 
     if (!user) {
         return res.status(300).json(`User ${userId} not found`);
@@ -58,7 +59,7 @@ app.put('/users/:userId', async (req, res) => {
     const newUserInfo = req.body;
     const {userId} = req.params;
     const users = await fileServices.reader();
-    const index = users.findIndex((u) => u.id === +userId);
+    const index = users.findIndex((user) => user.id === +userId);
 
     if (index === -1) {
         return res.status(300).json(`User ${userId} not found`);
@@ -74,7 +75,7 @@ app.put('/users/:userId', async (req, res) => {
 app.delete('/users/:userId', async (req, res) => {
     const {userId} = req.params;
     const users = await fileServices.reader();
-    const index = users.findIndex((u) => u.id === +userId);
+    const index = users.findIndex((user) => user.id === +userId);
 
     if (index === -1) {
         return res.status(300).json(`User ${userId} not found`);
