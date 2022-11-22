@@ -1,62 +1,97 @@
-// const fs = require('fs');
-const fs = require('fs/promises');
-const path = require('path');
-
-// fs.readdir('./boys', {withFileTypes: true}, (err, files) => {
-//     console.log(files);
-//
-//     for (const file of files) {
-//         console.log(file.isFile());
-//
-//         if (file.age === 19) {
-//             console.log(file.name);
-//         }
-//     }
-// })
-
-// fs.readdir('./boys', (err, files) => {
-//     console.log(files);
-//
-//     for(const fileName of files) {
-//         fs.stat(`./boys/${fileName}`, (err1, stats) => {
-//             console.log(stats.isDirectory());
-//
-//             if (stats.isFile()) {
-//                 fs.readFile(`./boys/${fileName}`, (err2, data) => {
-//                     console.log(data.toString());
-//                     if (data.gender === 'female') {
-//                         fs.copyFile(`./boys/${fileName}`, './girls/sophia.json', (err4) => {
-//                             console.log(err4);
-//                             fs.unlink(`./boys/${fileName}`, (err5) => {
-//                                 console.log(err5);
-//                             })
-//                         })
-//                     }
-//                 })
-//             }
-//         })
-//     }
-// })
+const express = require('express');
+const {fileServices} = require("./services");
 
 
+const app = express();
+
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
 
-const sorting = async (readFolder, writeFolder, gender) => {
-    const folderPath = path.join(__dirname, readFolder);
+// Запит юзерів у БД
+app.get('/users', async (req, res) => {
+    const users = await fileServices.reader();
 
-    const files = await fs.readdir(folderPath);
+    res.json(users);
+})
 
-    for (const file of files) {
-        const filePath = path.join(folderPath, file);
-        const data = await fs.readFile(filePath);
-        const user = JSON.parse(data);
+// Додавання юзерів у БД
+app.post('/users', async (req, res) => {
+    const userInfo = req.body;
 
-        if (user.gender === gender) {
-            await fs.rename(filePath, path.join(__dirname, writeFolder, file));
-        }
+    if (userInfo.name.length < 3 || typeof userInfo.name  !== 'string') {
+        return res.status(400).json(`User not found`);
     }
-}
+    if (userInfo.age < 0 || Number.isNaN(+userInfo.age)) {
+        return res.status(400).json(`Wrong age`);
+    }
+
+    const users = await fileServices.reader();
+    const user = {
+        id: users[users.length -1].id + 1,
+        name: userInfo.name,
+        age: userInfo.age
+    };
+
+    users.push(user);
+
+    await fileServices.writer(users);
+
+    res.status(201).json(user);
+})
+
+// Запит конкретного юзера у БД
+app.get('/users/:userId', async (req, res) => {
+    const {userId} = req.params;
+    const users = await fileServices.reader();
+    const user = users.find((u) => u.id === +userId);
+
+    if (!user) {
+        return res.status(300).json(`User ${userId} not found`);
+    }
+
+    res.json(user);
+})
+
+// Редагування конкретного юзера в БД
+app.put('/users/:userId', async (req, res) => {
+    const newUserInfo = req.body;
+    const {userId} = req.params;
+    const users = await fileServices.reader();
+    const index = users.findIndex((u) => u.id === +userId);
+
+    if (index === -1) {
+        return res.status(300).json(`User ${userId} not found`);
+    }
+
+    users[index] = {...users[index], ...newUserInfo};
+    await fileServices.writer(users);
+
+    res.status(201).json(users[index]);
+})
+
+// Видалення конкретного юзера з БД
+app.delete('/users/:userId', async (req, res) => {
+    const {userId} = req.params;
+    const users = await fileServices.reader();
+    const index = users.findIndex((u) => u.id === +userId);
+
+    if (index === -1) {
+        return res.status(300).json(`User ${userId} not found`);
+    }
+
+    users.splice(index, 1);
+    await fileServices.writer(users);
+
+    res.sendStatus(204);
+})
 
 
-sorting('boys', 'girls', 'female');
-sorting('girls', 'boys', 'male');
+app.get('/', (req, res) => {
+    res.json('Welcome');
+})
+
+
+app.listen(5000, () => {
+    console.log('Server listen 5000!');
+})
