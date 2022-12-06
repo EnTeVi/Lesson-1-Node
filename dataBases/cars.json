@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "brand": "Kawassaki",
+    "model": "H2R",
+    "year": 2020
+  },
+  {
+    "id": 2,
+    "brand": "BMW",
+    "model": "X7",
+    "year": 2018
+  },
+  {
+    "id": 3,
+    "brand": "Lexus",
+    "model": "LS 500h",
+    "year": 2017
+  },
+  {
+    "id": 4,
+    "brand": "Tesla",
+    "model": "S",
+    "year": 2016
+  },
+  {
+    "id": 5,
+    "brand": "Porshe",
+    "model": "Panamera Turbo E-Hybrid Sport Turismo",
+    "year": 2017
+  },
+  {
+    "id": 6,
+    "brand": "Rolls-Royce",
+    "model": "Phantom",
+    "year": 2017
+  },
+  {
+    "id": 7,
+    "brand": "Geon",
+    "model": "Tossa",
+    "year": 2012
+  },
+  {
+    "id": 8,
+    "brand": "Yamaha",
+    "model": "R1",
+    "year": 2018
+  }
+]
