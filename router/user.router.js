@@ -6,15 +6,15 @@ const mdlwr = require('../middleware/user.middleware');
 router.get('/', controller.getAllUser);
 
 // Додавання юзерів у БД
-router.post('/', controller.postUser);
+router.post('/', mdlwr.isBodyValidCreate, controller.postUser);
 
 // Запит конкретного юзера у БД
-router.get('/:userId', mdlwr.checkIsUserExist, controller.getUserById);
+router.get('/:userId', mdlwr.isIdValid, mdlwr.checkIsUserExist, controller.getUserById);
 
 // Редагування конкретного юзера в БД
-router.put('/:userId', mdlwr.checkIsUserExist, controller.updateUser);
+router.put('/:userId', mdlwr.isIdValid, mdlwr.isBodyValidUpdate, mdlwr.checkIsUserExist, controller.updateUser);
 
 // Видалення конкретного юзера з БД
-router.delete('/:userId', mdlwr.checkIsUserExist, controller.deleteUser);
+router.delete('/:userId', mdlwr.isIdValid, mdlwr.checkIsUserExist, controller.deleteUser);
 
 module.exports = router;

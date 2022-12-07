@@ -16,12 +16,12 @@ module.exports = {
         try {
             const {name, age} = req.body;
 
-            if (!name || name.length < 2) {
-                return res.status(400).json(`User not found`);
-            }
-            if (!age || age < 18 || Number.isNaN(age)) {
-                return res.status(400).json(`Wrong age`);
-            }
+            // if (!name || name.length < 2) {
+            //     return res.status(400).json(`User not found`);
+            // }
+            // if (!age || age < 18 || Number.isNaN(age)) {
+            //     return res.status(400).json(`Wrong age`);
+            // }
 
             const users = await fileServices.reader();
             const user = {
@@ -64,19 +64,32 @@ module.exports = {
     updateUser: async (req, res, next) => {
 
         try {
-            const newUserInfo = req.body;
-            const {userId} = req.params;
-            const users = await fileServices.reader();
-            const index = users.findIndex((user) => user.id === +userId);
+            // const newUserInfo = req.body;
+            const {user, users, body} = req;
 
-            if (index === -1) {
-                return res.status(300).json(`User ${userId} not found`);
-            }
+            const index = users.findIndex((u) => u.id === user.id);
+            users[index] = {...users[index], ...body};
 
-            users[index] = {...users[index], ...newUserInfo};
             await fileServices.writer(users);
 
             res.status(201).json(users[index]);
+
+
+
+
+            // const newUserInfo = req.body;
+            // const {userId} = req.params;
+            // const users = await fileServices.reader();
+            // const index = users.findIndex((user) => user.id === +userId);
+            //
+            // if (index === -1) {
+            //     return res.status(300).json(`User ${userId} not found`);
+            // }
+            //
+            // users[index] = {...users[index], ...newUserInfo};
+            // await fileServices.writer(users);
+            //
+            // res.status(201).json(users[index]);
         }catch (e) {
             next(e);
         }
