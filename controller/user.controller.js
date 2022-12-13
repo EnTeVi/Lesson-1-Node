@@ -1,72 +1,10 @@
-// // const {fileServices} = require("../services");
-//
-// const User = require('../dataBases/User');
-//
-// module.exports = {
-//     getAllUsers: async(req, res, next) => {
-//         try {
-//             const users = await User.find({});
-//
-//             res.json(users);
-//         }catch (e) {
-//             next(e);
-//         }
-//     },
-//
-//     getUserById: async (req, res, next) => {
-//         try {
-//             res.json(req.user);
-//         }catch (e) {
-//             next(e);
-//         }
-//     },
-//
-//
-//     postUser: async (req, res, next) => {
-//
-//         try {
-//             await User.create(req.body);
-//
-//             res.json('Ok');
-//         }catch (e) {
-//             next(e);
-//         }
-//     },
-//
-//
-//
-//     updateUser: async (req, res, next) => {
-//
-//         try {
-//             const newUserInfo = req.body;
-//             const userId = req.params.userId;
-//             await User.findByIdAndUpdate(userId, newUserInfo);
-//
-//             res.json('Update');
-//         }catch (e) {
-//             next(e);
-//         }
-//     },
-//
-//     deleteUser: async (req, res, next) => {
-//
-//         try {
-//             await User.deleteOne({_id: req.params.userId});
-//
-//             res.status(204).send('Ok');
-//         }catch (e) {
-//             next(e);
-//         }
-//     },
-// }
-
-
-const { userService } = require('../service');
+const User = require('../dataBases/User');
+const oauthService = require('../service/oauth.service');
 
 module.exports = {
     getAllUsers: async (req, res, next) => {
         try {
-            const users = await userService.findByParams();
+            const users = await User.find({});
 
             res.json(users);
         } catch (e) {
@@ -76,9 +14,7 @@ module.exports = {
 
     getUserById: async (req, res, next) => {
         try {
-            const user = await userService.findByIdWithCars(req.user._id);
-
-            res.json(user);
+            res.json(req.user);
         } catch (e) {
             next(e)
         }
@@ -89,9 +25,9 @@ module.exports = {
             const newUserInfo = req.body;
             const userId = req.params.userId;
 
-            const user = await userService.updateOne(userId, newUserInfo);
+            await User.findByIdAndUpdate(userId, newUserInfo);
 
-            res.status(201).json(user);
+            res.json('Updated');
         } catch (e) {
             next(e);
         }
@@ -99,9 +35,11 @@ module.exports = {
 
     createUser: async (req, res, next) => {
         try {
-            const user = await userService.create(req.body);
+            const hashPassword = await oauthService.hashPassword(req.body.password);
 
-            res.status(201).json(user);
+            await User.create({...req.body, password: hashPassword});
+
+            res.status(201).json('Ok');
         } catch (e) {
             next(e);
         }
@@ -109,7 +47,7 @@ module.exports = {
 
     deleteUserById: async (req, res, next) => {
         try {
-            await userService.deleteOne(req.params.userId);
+            await User.deleteOne({_id: req.params.userId});
 
             res.status(204).send('Ok')
         } catch (e) {
