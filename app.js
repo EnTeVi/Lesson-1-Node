@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv').config()
-mongoose.set('strictQuery', false);
 
 const userRouter = require('./router/user.router');
 const authRouter = require('./router/auth.router');
@@ -27,6 +26,6 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(configs.PORT, async () => {
-    await mongoose.connect('mongodb://127.0.0.1/myapp');
+    await mongoose.connect('mongodb://localhost:27017/june2022');
     console.log(`Server listen ${configs.PORT}`);
 });

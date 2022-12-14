@@ -1,18 +1,11 @@
 const router = require('express').Router();
-const controller = require("../controller/user.controller");
-const authMdlwr = require('../middleware/auth.middleware');
-const mdlwr = require("../middleware/user.middleware");
 
-router.get(
-    '/',
-    controller.getAllUsers
-);
-router.post(
-    '/',
-    mdlwr.isNewUserValid,
-    mdlwr.checkIsEmailUnique,
-    controller.createUser
-);
+const controller = require("../controller/user.controller");
+const mdlwr = require("../middleware/user.middleware");
+const authMdlwr = require("../middleware/auth.middleware");
+
+router.get('/', controller.getAllUsers);
+router.post('/', mdlwr.isNewUserValid, mdlwr.checkIsEmailUnique, controller.createUser);
 
 router.get(
     '/:userId',

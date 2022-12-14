@@ -1,21 +1,22 @@
+const User = require("../dataBase/User");
 const ApiError = require("../error/ApiError");
-const User = require('../dataBases/User');
-const userValidator = require('../validator/user.validator');
-const commonValidator = require('../validator/common.validators');
-const {valid} = require("joi");
+const userValidator = require("../validator/user.validator");
+const commonValidator = require("../validator/common.validators");
 
 module.exports = {
     getUserDynamically: (fieldName, from = 'body', dbField = fieldName) => async (req, res, next) => {
         try {
             const fieldToSearch = req[from][fieldName];
-            const user = await User.findOne({[dbField]: fieldToSearch});
+
+            const user = await User.findOne({ [dbField]: fieldToSearch });
 
             if (!user) {
                 throw new ApiError('Inna not found', 404);
             }
 
             req.user = user;
-            next();
+
+            next()
         } catch (e) {
             next(e);
         }
@@ -51,7 +52,7 @@ module.exports = {
 
             req.body = validate.value;
 
-            next();
+            next()
         } catch (e) {
             next(e);
         }
@@ -67,7 +68,7 @@ module.exports = {
 
             req.body = validate.value;
 
-            next();
+            next()
         } catch (e) {
             next(e);
         }
@@ -75,7 +76,8 @@ module.exports = {
 
     isUserIdValid: async (req, res, next) => {
         try {
-            const {userId} = req.params;
+            const { userId } = req.params;
+
             const validate = commonValidator.idValidator.validate(userId);
 
             if (validate.error) {

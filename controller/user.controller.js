@@ -1,5 +1,5 @@
-const User = require('../dataBases/User');
-const oauthService = require('../service/oauth.service');
+const User = require("../dataBases/User");
+const oauthService = require("../service/oauth.service");
 
 module.exports = {
     getAllUsers: async (req, res, next) => {
@@ -12,7 +12,7 @@ module.exports = {
         }
     },
 
-    getUserById: async (req, res, next) => {
+    getUserById: (req, res, next) => {
         try {
             res.json(req.user);
         } catch (e) {
@@ -27,7 +27,7 @@ module.exports = {
 
             await User.findByIdAndUpdate(userId, newUserInfo);
 
-            res.json('Updated');
+            res.json('Updated')
         } catch (e) {
             next(e);
         }
@@ -37,9 +37,9 @@ module.exports = {
         try {
             const hashPassword = await oauthService.hashPassword(req.body.password);
 
-            await User.create({...req.body, password: hashPassword});
+            await User.create({ ...req.body, password: hashPassword });
 
-            res.status(201).json('Ok');
+            res.status(201).json('Ok')
         } catch (e) {
             next(e);
         }
@@ -47,11 +47,11 @@ module.exports = {
 
     deleteUserById: async (req, res, next) => {
         try {
-            await User.deleteOne({_id: req.params.userId});
+            await User.deleteOne({ _id: req.params.userId });
 
             res.status(204).send('Ok')
         } catch (e) {
             next(e);
         }
     }
-};
+}
