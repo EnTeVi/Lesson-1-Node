@@ -1,4 +1,4 @@
-const User = require("../dataBase/User");
+const User = require("../dataBases/User");
 const ApiError = require("../error/ApiError");
 const userValidator = require("../validator/user.validator");
 const commonValidator = require("../validator/common.validators");
