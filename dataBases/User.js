@@ -5,9 +5,11 @@ const userSchema = new Schema({
     name: { type: String, required: true, default: '' },
     email: { type: String, required: true, trim: true, lowercase: true, unique: true },
     password: { type: String },
+    avatar: String,
     phone: { type: String, required: true },
     age: { type: Number, default: 18 }
 }, {
+    versionKey: false,
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true }

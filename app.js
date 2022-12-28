@@ -1,4 +1,5 @@
 const express = require('express');
+const fileUpload = require('express-fileupload');
 const swaggerUI = require('swagger-ui-express');
 const mongoose = require('mongoose');
 require('dotenv').config()
@@ -8,11 +9,15 @@ const authRouter = require('./router/auth.router');
 const configs = require('./config/config');
 const { cronRunner } = require('./cron');
 const swaggerJson = require('./swagger.json');
+mongoose.set('strictQuery', true);
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static('static'));
+
+app.use(fileUpload());
 
 app.use('/auth', authRouter);
 app.use('/users', userRouter);
